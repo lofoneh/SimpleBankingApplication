@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -23,12 +24,13 @@ namespace SimpleBankingApplication.Services
             LoadDataFromJson();
         }
 
-        private void CreateNewCustomer(string name, DateTime dob, string address, string phoneNumber, string gender, string accountType)
+        public void CreateNewCustomer(string firstName, string lastName, DateTime dob, string address, string phoneNumber, string gender, string accountType)
         {
             var newCustomer = new Customer
             {
                 CustomerId = nextIdForCustomer++,
-                Name = name,
+                FirstName = firstName,
+                LastName = lastName,
                 DOB = dob,
                 Address = address,
                 PhoneNumber = phoneNumber,
@@ -36,11 +38,69 @@ namespace SimpleBankingApplication.Services
                 AccountType = accountType
             };
             Console.WriteLine("Wait, account details are being created...");
+            newCustomer.Account = GenerateAccountDatails(accountType, firstName);
+            customers.Add(newCustomer);
+            Console.WriteLine("Registered Successfully");
+            SaveDataToJson();
         }
 
-        private Account GenerateAccountDatails(string accType)
+        public bool GetCustomer(string userName, string password)
         {
-            Accou
+            var customer = customers.FirstOrDefault(c => c.Account.UserName == userName && c.Account.Password == password);
+            if (customer != null)
+            {
+                Console.WriteLine($"Welcome {customer.FirstName} {customer.LastName}");
+                Console.WriteLine($"Account Number: {customer.Account.AccountNumber}");
+                Console.WriteLine($"Balance: {customer.Account.Balance}");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("Invalid credentials. Please try again.");
+                return false;
+            }
+        }
+
+        private Account GenerateAccountDatails(string accType, string firstName)
+        {
+            var accountDetails = new Account
+            {
+                AccountId = nextIdForAccount++,
+                Balance = GetMinimumBalance(accType),
+                UserName = GenerateUserName(firstName),
+                Password = GeneratePassword(),
+                AccountNumber = GenerateAccountNumber()
+            };
+            return accountDetails;
+        }
+
+        private string GenerateAccountNumber()
+        {
+            return "HDFC" + new Random().Next(100000, 999999);
+        }
+
+        private string GeneratePassword()
+        {
+            return "Pass" + "@" + new Random().Next(10000, 99999);
+        }
+
+        private string GenerateUserName(string name)
+        {
+            return name.ToLower() + "hdfc" + new Random().Next(10000, 99999);
+        }
+
+        private decimal GetMinimumBalance(string accType)
+        {
+            decimal minimumBalance = 0;
+            if (accType == "Savings")
+            {
+                minimumBalance = 1000;
+            }
+            else if (accType == "Current")
+            {
+                minimumBalance = 5000;
+            }
+            return minimumBalance;
         }
 
         private void SaveDataToJson()
