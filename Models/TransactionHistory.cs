@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SimpleBankingApplication.Models
 {
-    public class Passbook
+    public class TransactionHistory
     {
-        public int PassbookId { get; set; }
+        public int TransactionHistoryId { get; set; }
 
         public int AccountId { get; set; }
 

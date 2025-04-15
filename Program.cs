@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Security.Cryptography;
+using SimpleBankingApplication.Models;
 using SimpleBankingApplication.Services;
 
 namespace SimpleBankingApplication
@@ -9,6 +11,7 @@ namespace SimpleBankingApplication
         {
             AccountService accountService = new AccountService();
             BankService bankService = new BankService();
+            
 
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine("-----Welcome to Collage Banking System----------");
@@ -69,6 +72,11 @@ namespace SimpleBankingApplication
                                 Console.Write("4. ");
                                 Console.ForegroundColor = ConsoleColor.White;
                                 Console.WriteLine("Check Balance");
+                                
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                Console.Write("5. ");
+                                Console.ForegroundColor = ConsoleColor.White;
+                                Console.WriteLine("Exit");
 
                                 Console.Write("Enter your choice: ");
                                 switch (Console.ReadLine())
@@ -77,11 +85,17 @@ namespace SimpleBankingApplication
                                         Deposit(bankService, userName);
                                         break;
                                     case "2":
+                                        Withdraw(bankService, userName);
                                         break;
                                     case "3":
+                                        TransactionHistoryService transactionHistoryService = new TransactionHistoryService(userName);
                                         break;
                                     case "4":
+                                        CheckBalance(userName);
                                         break;
+                                    case "5":
+                                        Console.WriteLine("Thank you for using our banking system.\nGood Bye!");
+                                        return;
                                     default:
                                         Console.WriteLine("Invalid choice, please try again");
                                         break;
@@ -183,5 +197,37 @@ namespace SimpleBankingApplication
                 Console.WriteLine("Invalid amount. Please enter a valid number.");
             }
         }
-    }
+
+        static void Withdraw(BankService bankService, string userName)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine("\n-----Withdraw-----");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("\nEnter Amount to Withdraw: ");
+            if (decimal.TryParse(Console.ReadLine(), out decimal amount))
+            {
+                bankService.WithdrawAmount(userName, amount);
+            }
+            else
+            {
+                Console.WriteLine("Invalid amount. Please enter a valid number.");
+            }
+        }
+
+        //static void PrintTransactionHistory(string userName)
+        //{
+        //    Console.ForegroundColor = ConsoleColor.DarkYellow;
+        //    Console.WriteLine("\n-----Transaction History-----");
+        //    TransactionHistoryService transactionHistoryService = new TransactionHistoryService(userName);
+        //    transactionHistoryService.PrintTransactionHistory(userName);
+        //}
+
+        static void CheckBalance(string userName)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine("\n-----Check Balance-----");
+            BankService bankService = new BankService();
+            bankService.CheckBalance(userName);
+        }
+        }
 }

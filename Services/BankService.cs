@@ -12,10 +12,10 @@ namespace SimpleBankingApplication.Services
     public class BankService
     {
         private readonly String FilePath = Path.Combine(Directory.GetCurrentDirectory(), @"AccountData.json");
-        private readonly String FilePathPassBook = Path.Combine(Directory.GetCurrentDirectory(), @"PassbookData.json");
+        private readonly String FilePathTransactionHistory = Path.Combine(Directory.GetCurrentDirectory(), @"TransactionHistoryData.json");
 
         private List<Customer> Accounts = new List<Customer>();
-        private List<Passbook> Passbooks = new List<Passbook>();
+        private List<TransactionHistory> TransactionHistories = new List<TransactionHistory>();
 
         private int newId = 1;
 
@@ -23,7 +23,7 @@ namespace SimpleBankingApplication.Services
         public BankService()
         {
             LoadDataFromJson();
-            LoadDataFromJsonPassBook();
+            LoadDataFromJsonTransactionHistory();
         }
 
         public void DepositAmount(string userName, decimal amount)
@@ -34,19 +34,19 @@ namespace SimpleBankingApplication.Services
                 account.Account.Balance += amount;
                 var bal = account.Account.Balance;
 
-                var passbookData = new Passbook
+                var TransactionHistoryData = new TransactionHistory
                 {
-                    PassbookId = newId++,
+                    TransactionHistoryId = newId++,
                     AccountId = account.Account.AccountId,
                     Date = DateTime.Now,
                     TransactionType = "Deposit",
                     Amount = amount,
                     Balance = bal
                 };
-                Passbooks.Add(passbookData);
+                TransactionHistories.Add(TransactionHistoryData);
                 Console.WriteLine($"Deposited {amount} to {userName}'s account. New balance: {bal}");
                 SaveDataToJson();
-                SaveDataToJsonPassBook();
+                SaveDataToJsonTransactionHistory();
             }
             else
             {
@@ -63,19 +63,19 @@ namespace SimpleBankingApplication.Services
                 {
                     account.Account.Balance -= amount;
                     var bal = account.Account.Balance;
-                    var passbookData = new Passbook
+                    var TransactionHistoryData = new TransactionHistory
                     {
-                        PassbookId = newId++,
+                        TransactionHistoryId = newId++,
                         AccountId = account.Account.AccountId,
                         Date = DateTime.Now,
                         TransactionType = "Withdraw",
                         Amount = amount,
                         Balance = bal
                     };
-                    Passbooks.Add(passbookData);
+                    TransactionHistories.Add(TransactionHistoryData);
                     Console.WriteLine($"Withdrew {amount} from {userName}'s account. New balance: {bal}");
                     SaveDataToJson();
-                    SaveDataToJsonPassBook();
+                    SaveDataToJsonTransactionHistory();
                 }
                 else
                 {
@@ -95,16 +95,16 @@ namespace SimpleBankingApplication.Services
             {
                 var bal = account.Account.Balance;
                 Console.WriteLine($"Available balance is: {bal}");
-                //var passbookData = new Passbook
+                //var TransactionHistoryData = new TransactionHistory
                 //{
-                //    PassbookId = newId++,
+                //    TransactionHistoryId = newId++,
                 //    AccountId = account.Account.AccountId,
                 //    Date = DateTime.Now,
                 //    Balance = bal
                 //};
-                //Passbooks.Add(passbookData);
+                //TransactionHistories.Add(TransactionHistoryData);
                 //SaveDataToJson();
-                //SaveDataToJsonPassBook();
+                //SaveDataToJsonTransactionHistory();
             }
         }
 
@@ -115,10 +115,10 @@ namespace SimpleBankingApplication.Services
             Console.WriteLine("Data Saved Successfully");
         } 
         
-        private void SaveDataToJsonPassBook()
+        private void SaveDataToJsonTransactionHistory()
         {
-            var json = JsonConvert.SerializeObject(Passbooks, Formatting.Indented);
-            File.WriteAllText(FilePathPassBook, json);
+            var json = JsonConvert.SerializeObject(TransactionHistories, Formatting.Indented);
+            File.WriteAllText(FilePathTransactionHistory, json);
             Console.WriteLine("Data Saved Successfully");
         }
 
@@ -132,12 +132,12 @@ namespace SimpleBankingApplication.Services
             }
         }
         
-        private void LoadDataFromJsonPassBook()
+        private void LoadDataFromJsonTransactionHistory()
         {
-            if (File.Exists(FilePathPassBook))
+            if (File.Exists(FilePathTransactionHistory))
             {
-                var json = File.ReadAllText(FilePathPassBook);
-                Passbooks = JsonConvert.DeserializeObject<List<Passbook>>(json);
+                var json = File.ReadAllText(FilePathTransactionHistory);
+                TransactionHistories = JsonConvert.DeserializeObject<List<TransactionHistory>>(json);
                 Console.WriteLine("Data Loaded Successfully");
             }
         }

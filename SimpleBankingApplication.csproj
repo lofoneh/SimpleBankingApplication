@@ -48,11 +48,12 @@
   <ItemGroup>
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\Customer.cs" />
-    <Compile Include="Models\Passbook.cs" />
+    <Compile Include="Models\TransactionHistory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AccountService.cs" />
     <Compile Include="Services\BankService.cs" />
+    <Compile Include="Services\TransactionHistoryService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
