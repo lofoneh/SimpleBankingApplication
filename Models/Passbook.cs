@@ -17,5 +17,7 @@ namespace SimpleBankingApplication.Models
         public string TransactionType { get; set; }
 
         public decimal Amount { get; set; }
+
+        public decimal Balance { get; set; }
     }
 }

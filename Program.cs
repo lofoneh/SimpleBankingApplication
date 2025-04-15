@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SimpleBankingApplication.Models;
 using SimpleBankingApplication.Services;
 
 namespace SimpleBankingApplication
@@ -13,10 +8,12 @@ namespace SimpleBankingApplication
         static void Main(string[] args)
         {
             AccountService accountService = new AccountService();
+            BankService bankService = new BankService();
+
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine("-----Welcome to Collage Banking System----------");
 
-            while (true) 
+            while (true)
             {
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine("****Menu****");
@@ -25,27 +22,26 @@ namespace SimpleBankingApplication
                 Console.Write("1. ");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("Register");
-                
+
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write("2. ");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("Login");
-                
+
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write("3. ");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("Exit");
 
                 Console.Write("Enter your choice: ");
-                switch(Console.ReadLine())
+                switch (Console.ReadLine())
                 {
                     case "1":
                         Register(accountService);
                         break;
                     case "2":
                         string userName;
-                        login(accountService, out userName);
-                        if(login(accountService, out userName))
+                        if (login(accountService, out userName))
                         {
                             Console.WriteLine("Login successful.");
                             Console.WriteLine($"Welcome {userName} To Collage Banking System.");
@@ -63,22 +59,23 @@ namespace SimpleBankingApplication
                                 Console.Write("2. ");
                                 Console.ForegroundColor = ConsoleColor.White;
                                 Console.WriteLine("Withdraw");
-                                
+
                                 Console.ForegroundColor = ConsoleColor.Yellow;
                                 Console.Write("3. ");
                                 Console.ForegroundColor = ConsoleColor.White;
                                 Console.WriteLine("Print Passbook");
-                                
+
                                 Console.ForegroundColor = ConsoleColor.Yellow;
                                 Console.Write("4. ");
                                 Console.ForegroundColor = ConsoleColor.White;
                                 Console.WriteLine("Check Balance");
 
                                 Console.Write("Enter your choice: ");
-                                switch (Console.ReadLine()) 
+                                switch (Console.ReadLine())
                                 {
                                     case "1":
-                                        break; 
+                                        Deposit(bankService, userName);
+                                        break;
                                     case "2":
                                         break;
                                     case "3":
@@ -87,7 +84,7 @@ namespace SimpleBankingApplication
                                         break;
                                     default:
                                         Console.WriteLine("Invalid choice, please try again");
-                                            break;
+                                        break;
                                 }
                             }
                         }
@@ -110,13 +107,13 @@ namespace SimpleBankingApplication
 
         static void Register(AccountService accountService)
         {
-            Console.ForegroundColor= ConsoleColor.DarkYellow;
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine("\n-----Registering a new customer-----");
 
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("\nEnter First Name: ");
             string firstName = Console.ReadLine();
-            
+
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("\nEnter Second Name: ");
             string secondName = Console.ReadLine();
@@ -130,7 +127,7 @@ namespace SimpleBankingApplication
                 Console.Write("\nEnter Phone Number: ");
                 string phoneNumber = Console.ReadLine();
 
-                Console.Write("\nEnter the Gender(Male/Female/Other: ");
+                Console.Write("\nEnter the Gender(Male/Female): ");
                 string gender = Console.ReadLine();
 
                 Console.Write("\nEnter the Account Type(Savings/Current): ");
@@ -142,8 +139,6 @@ namespace SimpleBankingApplication
                     return;
                 }
 
-                Console.WriteLine("Wait, account details are being created...");
-
                 accountService.CreateNewCustomer(firstName, secondName, date, address, phoneNumber, gender, accType);
             }
             else
@@ -152,15 +147,16 @@ namespace SimpleBankingApplication
             }
         }
 
-        static bool login(AccountService accountService, out string userId)
+        static bool login(AccountService accountService, out string user)
         {
-            userId = "0";
+            user = "0";
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine("\n-----Login-----");
 
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("\nEnter User Name: ");
             string userName = Console.ReadLine();
+            user = userName;
             if (string.IsNullOrEmpty(userName))
             {
                 Console.WriteLine("User name cannot be empty.");
@@ -170,5 +166,22 @@ namespace SimpleBankingApplication
             string password = Console.ReadLine();
             return accountService.GetCustomer(userName, password);
         }
+
+        static void Deposit(BankService bankService, string userName)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine("\n-----Deposit-----");
+
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("\nEnter Amount to Deposit: ");
+            if (decimal.TryParse(Console.ReadLine(), out decimal amount))
+            {
+                bankService.DepositAmount(userName, amount);
+            }
+            else
+            {
+                Console.WriteLine("Invalid amount. Please enter a valid number.");
+            }
         }
+    }
 }

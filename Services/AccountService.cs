@@ -12,7 +12,7 @@ namespace SimpleBankingApplication.Services
 {
     public class AccountService
     {
-        private readonly String FilePath = Path.Combine(Directory.GetCurrentDirectory(), "JsonData/AccountData.json");
+        private readonly String FilePath = Path.Combine(Directory.GetCurrentDirectory(), @"AccountData.json");
 
         private List<Customer> customers = new List<Customer>();
 
