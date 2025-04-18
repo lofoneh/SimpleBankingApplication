@@ -10,7 +10,6 @@ namespace SimpleBankingApplication
         static void Main(string[] args)
         {
             AccountService accountService = new AccountService();
-            BankService bankService = new BankService();
             
 
             Console.ForegroundColor = ConsoleColor.Magenta;
@@ -66,7 +65,7 @@ namespace SimpleBankingApplication
                                 Console.ForegroundColor = ConsoleColor.Yellow;
                                 Console.Write("3. ");
                                 Console.ForegroundColor = ConsoleColor.White;
-                                Console.WriteLine("Print Passbook");
+                                Console.WriteLine("Print Transaction History");
 
                                 Console.ForegroundColor = ConsoleColor.Yellow;
                                 Console.Write("4. ");
@@ -82,15 +81,19 @@ namespace SimpleBankingApplication
                                 switch (Console.ReadLine())
                                 {
                                     case "1":
+                                        BankService bankService = new BankService(userName);
                                         Deposit(bankService, userName);
                                         break;
                                     case "2":
-                                        Withdraw(bankService, userName);
+                                        BankService bankService2 = new BankService(userName);
+                                        Withdraw(bankService2, userName);
                                         break;
                                     case "3":
                                         TransactionHistoryService transactionHistoryService = new TransactionHistoryService(userName);
+                                        PrintTransactionHistory(transactionHistoryService, userName);
                                         break;
                                     case "4":
+                                        BankService bankService3 = new BankService(userName);
                                         CheckBalance(userName);
                                         break;
                                     case "5":
@@ -214,19 +217,23 @@ namespace SimpleBankingApplication
             }
         }
 
-        //static void PrintTransactionHistory(string userName)
-        //{
-        //    Console.ForegroundColor = ConsoleColor.DarkYellow;
-        //    Console.WriteLine("\n-----Transaction History-----");
-        //    TransactionHistoryService transactionHistoryService = new TransactionHistoryService(userName);
-        //    transactionHistoryService.PrintTransactionHistory(userName);
-        //}
+        static void PrintTransactionHistory(TransactionHistoryService transactionHistoryService, string userName)
+        {
+            if (userName != null)
+            {
+                transactionHistoryService.PrintTransactionHistory(userName);
+            }
+            else
+            {
+                Console.WriteLine("User name cannot be null.");
+            }
+        }
 
         static void CheckBalance(string userName)
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine("\n-----Check Balance-----");
-            BankService bankService = new BankService();
+            BankService bankService = new BankService(userName);
             bankService.CheckBalance(userName);
         }
         }

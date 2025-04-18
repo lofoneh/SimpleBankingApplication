@@ -116,6 +116,11 @@ namespace SimpleBankingApplication.Services
             {
                 var json = File.ReadAllText(FilePath);
                 customers = JsonConvert.DeserializeObject<List<Customer>>(json);
+                if (customers != null && customers.Count > 0)
+                {
+                    nextIdForCustomer = customers.Max(c => c.CustomerId) + 1;
+                    nextIdForAccount = customers.Max(c => c.Account.AccountId) + 1;
+                }
                 Console.WriteLine("Data Loaded Successfully");
             }
         }

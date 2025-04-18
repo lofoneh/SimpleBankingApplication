@@ -13,7 +13,7 @@ namespace SimpleBankingApplication.Services
     internal class TransactionHistoryService
     {
         private readonly String FilePath = Path.Combine(Directory.GetCurrentDirectory(), @"AccountData.json");
-        private readonly String FilePathTransactionHistory = Path.Combine(Directory.GetCurrentDirectory(), @"TransactionHistoryData.json");
+        private readonly String FilePathTransactionHistory;
 
         private List<TransactionHistory> TransactionHistories = new List<TransactionHistory>();
         private List<Customer> Accounts = new List<Customer>();
@@ -23,12 +23,13 @@ namespace SimpleBankingApplication.Services
 
         public TransactionHistoryService(string userName)
         {   
-            TransactionHistoryPath = $"TransactionHistories/{userName}.txt";
+            TransactionHistoryPath = $"TransactionHistories/{userName}_transactionhistory.txt";
 
-            if (!Directory.Exists("TransactionHistories"))
+            if (!Directory.Exists($"TransactionHistories/{userName}"))
             {
-                Directory.CreateDirectory("TransactionHistories");
+                Directory.CreateDirectory($"TransactionHistories/{userName}");
             }
+
             LoadDataFromJson();
             LoadDataFromJsonTransactionHistory();
 
@@ -56,7 +57,7 @@ namespace SimpleBankingApplication.Services
         public void PrintTransactionHistory(string userName)
         {
             var account = Accounts.Find(a => a.Account.UserName == userName);
-            if (account == null)
+            if (account != null)
             {
                 var data = TransactionHistories.Find(th => th.AccountId == account.Account.AccountId);
                 if (data != null) {
@@ -65,8 +66,17 @@ namespace SimpleBankingApplication.Services
                         string date = data.Date.ToString("yyyy-MM-dd HH:MM:ss");
                         writer.WriteLine($"{date, -18} | {data.TransactionType, -16} | {data.Amount, 8:C} | {data.Balance, 9:C}");
                     }
+                    Console.WriteLine("Transaction History printed successfully");
+                }
+                else
+                {
+                    Console.WriteLine("No transaction history found for Account ID: " + account.Account.AccountId);
                 }
 
+            }
+            else
+            {
+                Console.WriteLine("Account not found.");
             }
         }
 

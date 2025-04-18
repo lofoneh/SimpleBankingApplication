@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -12,7 +13,7 @@ namespace SimpleBankingApplication.Services
     public class BankService
     {
         private readonly String FilePath = Path.Combine(Directory.GetCurrentDirectory(), @"AccountData.json");
-        private readonly String FilePathTransactionHistory = Path.Combine(Directory.GetCurrentDirectory(), @"TransactionHistoryData.json");
+        private String FilePathTransactionHistory;
 
         private List<Customer> Accounts = new List<Customer>();
         private List<TransactionHistory> TransactionHistories = new List<TransactionHistory>();
@@ -20,8 +21,9 @@ namespace SimpleBankingApplication.Services
         private int newId = 1;
 
 
-        public BankService()
+        public BankService(string userName)
         {
+            FilePathTransactionHistory = $"TransactionHistories/{userName}/{userName}_transactionhistory.json";
             LoadDataFromJson();
             LoadDataFromJsonTransactionHistory();
         }
@@ -33,6 +35,12 @@ namespace SimpleBankingApplication.Services
             {
                 account.Account.Balance += amount;
                 var bal = account.Account.Balance;
+
+                if (!Directory.Exists($"TransactionHistories/{account.Account.UserName}"))
+                {
+                    Directory.CreateDirectory($"TransactionHistories/{account.Account.UserName}");
+                }
+
 
                 var TransactionHistoryData = new TransactionHistory
                 {
@@ -95,16 +103,6 @@ namespace SimpleBankingApplication.Services
             {
                 var bal = account.Account.Balance;
                 Console.WriteLine($"Available balance is: {bal}");
-                //var TransactionHistoryData = new TransactionHistory
-                //{
-                //    TransactionHistoryId = newId++,
-                //    AccountId = account.Account.AccountId,
-                //    Date = DateTime.Now,
-                //    Balance = bal
-                //};
-                //TransactionHistories.Add(TransactionHistoryData);
-                //SaveDataToJson();
-                //SaveDataToJsonTransactionHistory();
             }
         }
 
@@ -117,6 +115,10 @@ namespace SimpleBankingApplication.Services
         
         private void SaveDataToJsonTransactionHistory()
         {
+            if (string.IsNullOrEmpty(FilePathTransactionHistory))
+            {
+                throw new InvalidOperationException("FilePathTransactionHistory is not set.");
+            }
             var json = JsonConvert.SerializeObject(TransactionHistories, Formatting.Indented);
             File.WriteAllText(FilePathTransactionHistory, json);
             Console.WriteLine("Data Saved Successfully");
@@ -138,6 +140,14 @@ namespace SimpleBankingApplication.Services
             {
                 var json = File.ReadAllText(FilePathTransactionHistory);
                 TransactionHistories = JsonConvert.DeserializeObject<List<TransactionHistory>>(json);
+                if (TransactionHistories != null)
+                {
+                    newId = TransactionHistories.Max(th => th.TransactionHistoryId) + 1;
+                }
+                else
+                {
+                    newId = 1;
+                }
                 Console.WriteLine("Data Loaded Successfully");
             }
         }
